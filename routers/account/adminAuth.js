@@ -6,6 +6,9 @@ import adminModel from "../../models/admin.js";
 import productBrandModel from "../../models/brand.js";
 import orderStatModel from "../../models/order_status.js";
 import salerModel from "../../models/saler.js";
+import topCategoryModel from "../../models/topcategory.js";
+import categoryModel from "../../models/category.js";
+import filterModel from "../../models/filter.js";
 const r = Router()
 
 r.post('/add-admin', async (req, res) => {
@@ -76,6 +79,76 @@ r.delete('/productBrand', async (req, res) => {
 })
 
 //test edildi
+r.post('/topCategory', async (req, res) => {
+    const topCategorySchema = joi.object({
+        name: joi.string().pattern(new RegExp('^[a-zA-ZəöğıüçşƏÖĞIÜÇŞ., ]{3,50}$')).required(),
+        categoryIds: joi.array()
+    })
+    const { error, value } = topCategorySchema.validate(req.body)
+    if (error) {
+        return res.status(401).send(error.message)
+    }
+    value.adminId = req.admin._id
+    const newTopCategory = await topCategoryModel.create(value)
+    return res.status(200).send(newTopCategory)
+
+})
+
+//test edildi
+r.get('/topCategory', async (req, res) => {
+    const allTopCategory = await topCategoryModel.find({ adminId: req.admin._id }).populate({
+        path: 'categoryIds', select:'name',
+    })
+    return res.status(200).send(allTopCategory)
+})
+
+//put yazmaq
+
+//test edildi
+r.post('/category', async (req, res) => {
+    const categorySchema = joi.object({
+        name: joi.string().pattern(new RegExp('^[a-zA-ZəöğıüçşƏÖĞIÜÇŞ., ]{3,50}$')).required(),
+        filterIds: joi.array(),
+        topCategoryId: joi.string()
+    })
+    const { error, value } = categorySchema.validate(req.body)
+    if (error) {
+        return res.status(401).send(error.message)
+    }
+    value.adminId = req.admin._id
+    const newCategory = await categoryModel.create(value)
+    return res.status(200).send(newCategory)
+})
+
+//test edildi
+r.get('/category', async (req, res) => {
+    const allCategory = await categoryModel.find({ adminId: req.admin._id }).populate([
+        { path: 'filterIds', select: ['name', 'values'] },
+        { path: 'topCategoryId', select: 'name' }
+    ])
+    return res.status(200).send(allCategory)
+})
+
+//put ve delete olacaq, getbyID
+
+//test edildi
+r.post('/filter', async (req, res) => {
+    const filterSchema = joi.object({
+        name: joi.string().pattern(new RegExp('^[a-zA-ZəöğıüçşƏÖĞIÜÇŞ., ]{3,50}$')).required(),
+        values: joi.array(),
+    })
+    const { error, value } = filterSchema.validate(req.body)
+    if (error) {
+        return res.status(401).send(error.message)
+    }
+    value.adminId = req.admin._id
+    const newFilter = await filterModel.create(value)
+    return res.status(200).send(newFilter)
+})
+
+//PUT VE DELETE
+
+//test edildi
 r.post('/product', async (req, res) => {
     const productSchema = joi.object({
         name: joi.string().pattern(new RegExp('^[a-zA-Z0-9əöğıüçşƏÖĞIÜÇŞ., ]{3,30}$')).required(),
@@ -83,7 +156,8 @@ r.post('/product', async (req, res) => {
         reviewIds: joi.array(),
         offerIds: joi.array(),
         photoUrls: joi.array(),
-        brandId: joi.string()
+        brandId: joi.string(),
+        categoryId: joi.string()
     })
     const { error, value } = productSchema.validate(req.body)
     if (error) {
@@ -109,7 +183,8 @@ r.put('/product', async (req, res) => {
         reviewIds: joi.array(),
         offerIds: joi.array(),
         photoUrls: joi.array(),
-        brandID: joi.string()
+        brandID: joi.string(),
+        categoryId: joi.string()
     })
     const { error, value } = productSchema.validate(req.body)
     if (error) {

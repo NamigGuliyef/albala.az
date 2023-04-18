@@ -1,30 +1,21 @@
 import mongoose, { model, Schema } from "mongoose";
 const topCategorySchema = new Schema({
-    name: {
-        type: String,
-        required: true
-    },
-    categoryId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'category'
-    },
-    filterId: {
-        type: [mongoose.Schema.Types.ObjectId],
-        ref: 'filter'
-    }
+    name: { type: String, required: true },
+    categoryIds: { type: [mongoose.Schema.Types.ObjectId], ref: 'category' },
+    adminId: { type: mongoose.Schema.Types.ObjectId, ref: 'admin' }
 }, { versionKey: false })
 
-const subCategoryModel = model('topCategory', topCategorySchema)
+const topCategoryModel = model('topCategory', topCategorySchema)
 export default topCategoryModel
 
 
 
 
 /*
-category [erkek, kadin, elektronik]
-subcategory[tshort, , telefon]
+top category [erkek, kadin, elektronik]
+category[tshort, , telefon]
 
-subcategory -> [{name:ram, values:[2,4,6,8,12]}]
+category -> [{name:ram, values:[2,4,6,8,12]}]
 
 
 */

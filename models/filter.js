@@ -1,13 +1,14 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 const filterSchema = new Schema({
     name: {
-        type: String,
+        type: String, // storage, color
         required: true
     },
     values: {
-        type: [String],
+        type: [String],  // [8, 16, 32, ...] , [red, green]
         required: true
-    }
+    },
+    adminId: { type: mongoose.Schema.Types.ObjectId, ref: 'admin' }
 }, { versionKey: false })
 
 const filterModel = model('filter', filterSchema)
