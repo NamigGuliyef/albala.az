@@ -9,6 +9,7 @@ import salerModel from "../../models/saler.js";
 import topCategoryModel from "../../models/topcategory.js";
 import categoryModel from "../../models/category.js";
 import filterModel from "../../models/filter.js";
+import { createFilterObject } from '../account/filter.js'
 const r = Router()
 
 r.post('/add-admin', async (req, res) => {
@@ -97,7 +98,7 @@ r.post('/topCategory', async (req, res) => {
 //test edildi
 r.get('/topCategory', async (req, res) => {
     const allTopCategory = await topCategoryModel.find({ adminId: req.admin._id }).populate({
-        path: 'categoryIds', select:'name',
+        path: 'categoryIds', select: 'name',
     })
     return res.status(200).send(allTopCategory)
 })
@@ -170,9 +171,10 @@ r.post('/product', async (req, res) => {
 
 //test edildi
 r.get('/product', async (req, res) => {
-    const allProduct = await productModel.find({ adminId: req.admin._id })
+    const allProduct = await productModel.find(createFilterObject(req.query))
     return res.status(200).send(allProduct)
 })
+
 
 //duzelis edildi!
 r.put('/product', async (req, res) => {
